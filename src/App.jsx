@@ -79,7 +79,7 @@ function App() {
   useEffect(async () => {
     const fetchData = async () => {
       const result = await axios(
-        "https://61f0b8d3e386270017fe1e49.mockapi.io/notes"
+        "https://61f0b8d3e386270017fe1e49.mockapi.io/notes?sortBy=is_favorite&order=desc"
       );
       setData(result.data);
       console.log(result.data);
