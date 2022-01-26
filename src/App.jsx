@@ -6,21 +6,13 @@ import {
   Button,
   Card,
   CardContent,
-  CardHeader,
   Container,
   Divider,
-  Grid,
   FormControl,
-  InputLabel,
   List,
   ListItem,
-  ListItemButton,
-  ListeItemIcon,
   ListItemText,
-  ListSubheader,
-  Menu,
   MenuItem,
-  Paper,
   Select,
   Typography,
   ListItemIcon,
@@ -28,21 +20,22 @@ import {
 } from "@mui/material";
 import StarRateIcon from "@mui/icons-material/StarRate";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
 import AddIcon from "@mui/icons-material/Add";
-import { orange } from "@mui/material/colors";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { orange, red } from "@mui/material/colors";
 import TopBar from "./shared-components/TopBar";
 import Footer from "./shared-components/Footer";
 
-function App() {
+function App(props) {
   const favoriteColor = orange[500];
+  const deleteColor = red[500];
+
   const [data, setData] = useState([]);
   const [error, setError] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [sortType, setSortType] = useState("favorites");
 
   useEffect(() => {
-    console.log(data);
     const sortArray = (type) => {
       const types = {
         favorites: "is_favorite",
@@ -60,12 +53,30 @@ function App() {
 
   const open = Boolean(anchorEl);
 
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
+  const handleFavorite = (e, value, is_favorite) => {
+    if (e.is_favorite) {
+      const newData = data.map((obj) =>
+        obj.id === e.id ? { ...obj, is_favorite: false } : obj
+      );
+      setData(newData);
+    } else {
+      const newData = data.map((obj) =>
+        obj.id === e.id ? { ...obj, is_favorite: true } : obj
+      );
+      setData(newData);
+    }
   };
 
-  const handleClose = () => {
-    setAnchorEl(null);
+  const handleAdd = (item) => {
+    const newItem = data.slice();
+    newItem.push(item);
+    setData(newItem);
+  };
+
+  const handleDelete = (e) => {
+    const itemToRemove = e;
+    const newData = data.filter((e) => e !== itemToRemove);
+    setData(newData);
   };
 
   useEffect(() => {
@@ -95,7 +106,7 @@ function App() {
             </Typography>
           </Box>
           <Box sx={{ flexGrow: 0 }}>
-            <Button variant="contained">
+            <Button variant="contained" onClick={handleAdd}>
               <AddIcon />
               New Note
             </Button>
@@ -127,34 +138,29 @@ function App() {
                     secondaryAction={
                       <>
                         <IconButton
-                          onClick={handleClick}
+                          onClick={() => handleDelete(item, data)}
                           size="small"
                           sx={{ ml: 2 }}
                           aria-controls={open ? "account-menu" : undefined}
                           aria-haspopup="true"
                           aria-expanded={open ? "true" : undefined}
                         >
-                          <MoreVertIcon />
+                          <DeleteIcon sx={{ color: deleteColor }} />
                         </IconButton>
-                        <Menu
-                          anchorEl={anchorEl}
-                          id={item.id}
-                          open={open}
-                          onClose={handleClose}
-                          onClick={handleClose}
-                        >
-                          <MenuItem>Edit</MenuItem>
-                          <MenuItem>Delete</MenuItem>
-                        </Menu>
                       </>
                     }
                   >
                     <ListItemIcon>
-                      {item.is_favorite ? (
-                        <StarRateIcon sx={{ color: favoriteColor }} />
-                      ) : (
-                        <StarBorderIcon />
-                      )}
+                      <IconButton
+                        aria-label="Favorite"
+                        onClick={() => handleFavorite(item, data)}
+                      >
+                        {item.is_favorite ? (
+                          <StarRateIcon sx={{ color: favoriteColor }} />
+                        ) : (
+                          <StarBorderIcon />
+                        )}
+                      </IconButton>
                     </ListItemIcon>
                     <ListItemText
                       primary={item.title}
