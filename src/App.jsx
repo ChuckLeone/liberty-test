@@ -2,6 +2,7 @@ import "./App.css";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import {
+  Alert,
   Box,
   Button,
   Card,
@@ -32,6 +33,7 @@ function App(props) {
 
   const [data, setData] = useState([]);
   const [error, setError] = useState(false);
+  const [success, setSuccess] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [sortType, setSortType] = useState("favorites");
 
@@ -71,6 +73,10 @@ function App(props) {
     const newItem = data.slice();
     newItem.push(item);
     setData(newItem);
+    setSuccess(true);
+    setTimeout(() => {
+      setSuccess(false);
+    }, 3000);
   };
 
   const handleDelete = (e) => {
@@ -112,6 +118,24 @@ function App(props) {
             </Button>
           </Box>
         </Box>
+        {!error && (
+          <Alert
+            sx={{ marginBottom: "24px" }}
+            severity="error"
+            variant="filled"
+          >
+            An error occured while retrieving notes, please try again.
+          </Alert>
+        )}
+        {success && (
+          <Alert
+            sx={{ marginBottom: "24px" }}
+            severity="success"
+            variant="filled"
+          >
+            New note added successfully!
+          </Alert>
+        )}
         <Card elevation={1}>
           <CardContent>
             <div style={{ textAlign: "left" }}>
