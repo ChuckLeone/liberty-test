@@ -34,37 +34,29 @@ import { orange } from "@mui/material/colors";
 import TopBar from "./shared-components/TopBar";
 import Footer from "./shared-components/Footer";
 
-const ListSelector = () => {
-  const [list, setList] = useState("favorites");
-
-  const handleChange = (event) => {
-    setList(event.target.value);
-  };
-
-  return (
-    <>
-      <FormControl sx={{ width: "200px", marginBottom: "8px" }}>
-        <Select
-          labelId="list-select-label"
-          id="demo-simple-select"
-          value={list}
-          displayEmpty
-          onChange={handleChange}
-          inputProps={{ "aria-label": "Sort Notes By" }}
-        >
-          <MenuItem value={"favorites"}>Favorites</MenuItem>
-          <MenuItem value={"created-on"}>Created On</MenuItem>
-        </Select>
-      </FormControl>
-    </>
-  );
-};
-
 function App() {
   const favoriteColor = orange[500];
   const [data, setData] = useState([]);
-
+  const [error, setError] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [sortType, setSortType] = useState("favorites");
+
+  useEffect(() => {
+    console.log(data);
+    const sortArray = (type) => {
+      const types = {
+        favorites: "is_favorite",
+        created: "creation_date",
+      };
+      const sortProperty = types[type];
+      const sorted = [...data].sort(
+        (a, b) => b[sortProperty] - a[sortProperty]
+      );
+      setData(sorted);
+    };
+
+    sortArray(sortType);
+  }, [sortType]);
 
   const open = Boolean(anchorEl);
 
@@ -76,15 +68,15 @@ function App() {
     setAnchorEl(null);
   };
 
-  useEffect(async () => {
+  useEffect(() => {
     const fetchData = async () => {
       const result = await axios(
         "https://61f0b8d3e386270017fe1e49.mockapi.io/notes?sortBy=is_favorite&order=desc"
       );
       setData(result.data);
     };
-    fetchData();
-  });
+    fetchData().catch(setError(true));
+  }, []);
 
   return (
     <div
@@ -109,10 +101,22 @@ function App() {
             </Button>
           </Box>
         </Box>
-        <Card>
+        <Card elevation={1}>
           <CardContent>
             <div style={{ textAlign: "left" }}>
-              <ListSelector />
+              <FormControl sx={{ width: "200px", marginBottom: "8px" }}>
+                <Select
+                  labelId="list-select-label"
+                  id="note-sort-select"
+                  value={sortType}
+                  displayEmpty
+                  onChange={(e) => setSortType(e.target.value)}
+                  inputProps={{ "aria-label": "Sort Notes By" }}
+                >
+                  <MenuItem value={"favorites"}>Favorites</MenuItem>
+                  <MenuItem value={"created"}>Created On</MenuItem>
+                </Select>
+              </FormControl>
             </div>
             <Divider />
             <List>
@@ -154,7 +158,12 @@ function App() {
                     </ListItemIcon>
                     <ListItemText
                       primary={item.title}
-                      secondary={item.content}
+                      secondary={
+                        <>
+                          <div>{item.content}</div>
+                          <div>Created on: {item.creation_date}</div>
+                        </>
+                      }
                     />
                   </ListItem>
                   <Divider />
