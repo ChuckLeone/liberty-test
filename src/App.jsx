@@ -40,6 +40,7 @@ function App(props) {
   const [data, setData] = useState([]);
   const [error, setError] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [deleted, setDeleted] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [sortType, setSortType] = useState("favorites");
   const [openDialog, setOpenDialog] = useState(false);
@@ -98,9 +99,9 @@ function App(props) {
     const itemToRemove = e;
     const newData = data.filter((e) => e !== itemToRemove);
     setData(newData);
-    setSuccess(true);
+    setDeleted(true);
     setTimeout(() => {
-      setSuccess(false);
+      setDeleted(false);
     }, 3000);
   };
 
@@ -153,6 +154,15 @@ function App(props) {
             variant="filled"
           >
             New note added successfully!
+          </Alert>
+        )}
+        {deleted && (
+          <Alert
+            sx={{ marginBottom: "24px" }}
+            severity="success"
+            variant="filled"
+          >
+            Note deleted successfully!
           </Alert>
         )}
         <Card elevation={1}>
