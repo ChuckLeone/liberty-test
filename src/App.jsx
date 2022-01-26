@@ -8,10 +8,16 @@ import {
   Card,
   CardContent,
   Container,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   Divider,
   FormControl,
   List,
   ListItem,
+  ListItemButton,
   ListItemText,
   MenuItem,
   Select,
@@ -36,6 +42,15 @@ function App(props) {
   const [success, setSuccess] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [sortType, setSortType] = useState("favorites");
+  const [openDialog, setOpenDialog] = useState(false);
+
+  const handleOpenDialog = () => {
+    setOpenDialog(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+  };
 
   useEffect(() => {
     const sortArray = (type) => {
@@ -83,6 +98,10 @@ function App(props) {
     const itemToRemove = e;
     const newData = data.filter((e) => e !== itemToRemove);
     setData(newData);
+    setSuccess(true);
+    setTimeout(() => {
+      setSuccess(false);
+    }, 3000);
   };
 
   useEffect(() => {
@@ -159,6 +178,7 @@ function App(props) {
                 <>
                   <ListItem
                     key={item.id}
+                    disablePadding
                     secondaryAction={
                       <>
                         <IconButton
@@ -186,15 +206,17 @@ function App(props) {
                         )}
                       </IconButton>
                     </ListItemIcon>
-                    <ListItemText
-                      primary={item.title}
-                      secondary={
-                        <>
-                          <div>{item.content}</div>
-                          <div>Created on: {item.creation_date}</div>
-                        </>
-                      }
-                    />
+                    <ListItemButton onClick={handleOpenDialog}>
+                      <ListItemText
+                        primary={item.title}
+                        secondary={
+                          <>
+                            <div>{item.content}</div>
+                            <div>Created on: {item.creation_date}</div>
+                          </>
+                        }
+                      />
+                    </ListItemButton>
                   </ListItem>
                   <Divider />
                 </>
@@ -204,6 +226,25 @@ function App(props) {
         </Card>
         <Footer />
       </Container>
+      <Dialog
+        open={openDialog}
+        onClose={handleCloseDialog}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">{"Edit Note"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Editing of notes is not currently available
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog}>Cancel</Button>
+          <Button onClick={handleCloseDialog} autoFocus>
+            Save
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }
