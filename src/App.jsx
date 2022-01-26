@@ -1,5 +1,5 @@
 import "./App.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import {
   Box,
@@ -62,66 +62,30 @@ const ListSelector = () => {
 
 function App() {
   const favoriteColor = orange[500];
-  const listData = [
-    {
-      id: 0,
-      title: "Shopping List",
-      content: "Pickup a few groceries after the game",
-      creation_date: "mmddyyy",
-      is_favorite: true,
-    },
-    {
-      id: 1,
-      title: "Ideas for Project Names",
-      content: "Creative names",
-      creation_date: "mmddyyy",
-      is_favorite: true,
-    },
-    {
-      id: 2,
-      title: "To-Do List",
-      content: "Things you must get done this weekend",
-      creation_date: "mmddyyy",
-      is_favorite: true,
-    },
-    {
-      id: 3,
-      title: "Upcoming Appointment",
-      content: "Dr's Appointment on January 31, 2022",
-      creation_date: "mmddyyy",
-      is_favorite: true,
-    },
-    {
-      id: 4,
-      title: "Upcoming Appointment",
-      content: "Dr's Appointment on January 31, 2022",
-      creation_date: "mmddyyy",
-      is_favorite: true,
-    },
-    {
-      id: 5,
-      title: "Upcoming Appointment",
-      content: "Dr's Appointment on January 31, 2022",
-      creation_date: "mmddyyy",
-      is_favorite: false,
-    },
-    {
-      id: 6,
-      title: "Upcoming Appointment",
-      content: "Dr's Appointment on January 31, 2022",
-      creation_date: "mmddyyy",
-      is_favorite: false,
-    },
-  ];
+  const [data, setData] = useState([]);
 
   const [anchorEl, setAnchorEl] = useState(null);
+
   const open = Boolean(anchorEl);
+
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
+
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  useEffect(async () => {
+    const fetchData = async () => {
+      const result = await axios(
+        "https://61f0b8d3e386270017fe1e49.mockapi.io/notes"
+      );
+      setData(result.data);
+      console.log(result.data);
+    };
+    fetchData();
+  });
 
   return (
     <div
@@ -131,6 +95,7 @@ function App() {
       }}
     >
       <TopBar />
+
       <Container sx={{ marginTop: "24px" }}>
         <Box sx={{ display: "flex", marginBottom: "16px" }}>
           <Box sx={{ flexGrow: 1, display: { xs: "flex" } }}>
@@ -152,7 +117,7 @@ function App() {
             </div>
             <Divider />
             <List>
-              {listData.map((item) => (
+              {data.map((item) => (
                 <>
                   <ListItem
                     key={item.id}
